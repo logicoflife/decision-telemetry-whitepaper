@@ -22,7 +22,7 @@ This paper presents a maturity model, architectural framework, and reference imp
 
 Modern analytics systems operate in a fundamentally reactive mode: they reconstruct decisions after the fact from logs, events, and partial artifacts. This creates fragile pipelines, high investigation cost, and limited explainability in domains such as fraud detection, compliance, and AI-driven systems. While data contracts have improved structural stability, they address schema integrity rather than semantic intent. This paper argues that decisions themselves must become first-class architectural objects.
 
-We introduce the concept of *decision contracts*: a standardized runtime representation of outcomes, evidence, and lineage that is emitted at the moment a decision occurs. Decision contracts allow analytics systems to consume intent directly rather than infer it indirectly. We propose a three-stage analytics maturity model — reactive cleanup, structural contracts, and intentional decision instrumentation — and describe an architecture pattern that enables analytics-ready systems by design. A reference implementation demonstrates the practicality of this approach and suggests a path toward a universal decision telemetry standard.
+We introduce the concept of *decision contracts*: a standardized runtime representation of outcomes, evidence, and lineage that is emitted at the moment a decision occurs. Decision contracts allow analytics systems to consume intent directly rather than infer it indirectly. We propose a three-stage analytics maturity model — reactive cleanup, structural contracts, and intentional decision instrumentation — and describe an architecture pattern intended to enable analytics-ready systems by design. A reference implementation demonstrates the practicality of this approach and suggests a path toward a universal decision telemetry standard.
 
 ---
 
@@ -35,6 +35,14 @@ This pattern treats analytics as a downstream cleanup function. Pipelines become
 This reactive model does not fail because of insufficient tooling. It fails because producer systems are not designed to emit decision semantics. Logs capture behavior; metrics capture aggregates; events capture transitions. None of these primitives guarantee an explicit statement of why a decision occurred.
 
 As systems grow more automated and AI-driven, this gap widens. The cost of reconstructing decisions increases faster than the value of analytics derived from them. A structural shift is required: decisions must be observable by design, not inferred after the fact.
+
+## 1.1 The Urgency of Now
+
+Three converging trends have dramatically increased the cost of opaque decision systems, transforming this from a technical debt issue into a strategic risk:
+
+1.  **AI and Probabilistic Systems**: Unlike deterministic code, AI agents and LLMs produce probabilistic outputs. Understanding *why* an agent took an action cannot be solved by reading the code; it requires a trace of the context, prompt, and model output.
+2.  **Automated Fraud Pipelines**: Modern fraud detection is a complex DAG of rules, ML models, and manual reviews. When a legitimate user is blocked, "debugging" the decision requires tracing a path through dozens of independent components.
+3.  **Regulatory Pressure**: New frameworks (EU AI Act, GDPR, financial compliance) demand more than just logs; they require explainability. Organizations must be able to mechanically prove why a specific decision was made, without relying on forensic archaeology.
 
 ---
 
@@ -76,6 +84,39 @@ A decision can be defined as a comprehensive semantic object composed of five co
 4.  **Outcome**: The final result (Approved, Rejected, Flagged).
 5.  **Lineage**: The causal chain of preceding decisions (Parent/Child relationships).
 
+```mermaid
+classDiagram
+    class Decision {
+        +id: UUID
+        +trace_id: UUID
+        +timestamp: Date
+        +tenant_id: String
+    }
+    class Actor {
+        +type: Enum [System, Human, Agent]
+        +id: String
+        +org: String
+    }
+    class Evidence {
+        +key: String
+        +value: Any
+    }
+    class PolicyCheck {
+        +policy: String
+        +result: Enum [Pass, Fail]
+    }
+    class Outcome {
+        +status: String
+        +result: Any
+    }
+
+    Decision --* Actor : has
+    Decision --* Evidence : contains
+    Decision --* PolicyCheck : evaluates
+    Decision --* Outcome : produces
+```
+
+
 When these elements are emitted intentionally at runtime, the system declares its reasoning rather than forcing analytics to infer it.
 
 A *decision contract* is the standardized representation of this object. It is not a logging convention. It is a semantic declaration that a meaningful decision has occurred, recorded in an append-only ledger.
@@ -84,7 +125,7 @@ This shift transforms decisions from implicit side effects into explicit artifac
 
 ## 3.1 Anatomy of a Decision Event
 
-To make this concrete, a decision is not a single log line but a structured event containing specific fields. Below is a JSON representation of a decision outcome event as defined in the reference implementation:
+To make this concrete, a decision is not a single log line but a structured event containing specific fields. The schema is language-agnostic and transport-neutral. Below is a JSON representation of a decision outcome event as defined in the reference implementation:
 
 ```json
 {
@@ -128,6 +169,23 @@ Once a decision is recorded, it is written to an append-only ledger. This guaran
 
 Analytics architecture evolves through recognizable stages of maturity. These stages are not mutually exclusive; they represent an accumulation of capabilities.
 
+```mermaid
+graph TD
+    subgraph Level 1: Reactive
+        L1[Log Cleanup & Archaeology]
+    end
+    subgraph Level 2: Structural
+        L2[Schema Contracts & Validation]
+    end
+    subgraph Level 3: Intentional
+        L3[Decision Telemetry & Ledger]
+    end
+    
+    L1 --> L2
+    L2 --> L3
+```
+
+
 ### Level 1 — Reactive cleanup
 
 At this stage, analytics reconstructs decisions from artifacts. Pipelines compensate for inconsistent upstream emissions. Knowledge of system behavior is embedded in transformation logic and institutional memory. Analytics functions as archaeology.
@@ -150,8 +208,34 @@ Decision Telemetry Architecture introduces a dedicated semantic layer between pr
 
 1.  **Producer Systems**: Application code instruments decision points using an SDK. At the moment a decision occurs, it emits a structured event (Start, Evidence, Policy Check, Outcome).
 2.  **Collector**: A lightweight agent receives these events, validates them against the schema, and buffers them for efficient transmission.
-3.  **Decision Ledger**: The core of the architecture is the **Append-Only Ledger**. Unlike mutable databases, the ledger stores the immutable history of decisions. It guarantees that reasoning can be audited exactly as it happened.
+3.  **Decision Ledger**: The core of the architecture is the **Append-Only Ledger**. Unlike mutable databases, the ledger stores the immutable history of decisions. The ledger is a logical architectural concept, not a specific storage technology. It guarantees that reasoning can be audited exactly as it happened.
 4.  **Analytics Consumers**: Downstream systems (Fraud Detections, Compliance Audits, AI Governance) consume from the ledger. They query declared intent rather than inferring behavior from logs.
+
+```mermaid
+graph LR
+    subgraph Producer
+        App[Application Logic]
+        SDK[Decision SDK]
+        App -->|Instruments| SDK
+    end
+
+    subgraph Infrastructure
+        Collector[Telemetry Collector]
+        Ledger[(Append-Only Ledger)]
+        SDK -->|Events| Collector
+        Collector -->|Validated Stream| Ledger
+    end
+
+    subgraph Consumers
+        Audit[Compliance Audit]
+        Fraud[Fraud Detection]
+        Debug[System Debugging]
+        Ledger -->|Query| Audit
+        Ledger -->|Stream| Fraud
+        Ledger -->|Inspect| Debug
+    end
+```
+
 
 This architecture resembles the evolution of observability systems. Metrics and traces did not replace logs; they added a higher-level abstraction that made system behavior legible. Decision telemetry performs the same function for *intent*.
 
@@ -193,11 +277,26 @@ Multiple implementations could exist. The value lies in the contract, not the to
 
 ---
 
-## 8. Toward a universal standard
+## 8. Related Work
 
-For decision telemetry to reach its full potential, decision contracts must become a shared vocabulary. A universal schema allows interoperability across systems, organizations, and industries.
+Decision telemetry does not exist in a vacuum. It builds upon and extends several established disciplines:
 
-The path forward resembles earlier infrastructure standards: open specification, reference implementations, and community-driven evolution. As adoption grows, decision telemetry can become as fundamental as metrics and tracing in modern systems.
+-   **Structured Logging**: Provides the format (JSON) but lacks the semantic schema for decisions. Logs tell you *what* happened, not *why*.
+-   **OpenTelemetry (OTel)**: Solves the distributed context propagation problem (traces/spans) but focuses on *latency* and *errors*. Decision telemetry leverages OTel's context propagation but adds a semantic layer for *business logic*.
+-   **Data Contracts**: Enforce schema stability for analytics but often miss the diverse runtime context of a decision. Decision contracts are a specialized form of data contract focused on reasoning.
+-   **Event Sourcing**: Records state changes. Decisions are often the *cause* of state changes. Recording the decision (the "why") complements the event (the "what").
+-   **Audit Trails**: Traditionally separate, manual, and partial. Decision telemetry makes audit trails a natural byproduct of the system's operation.
+-   **Explainable AI (XAI)**: Focuses on model weights and features. Decision telemetry captures the *system* context around the model, including policy overrides and human-in-the-loop actions.
+
+**Synthesis**: Decision telemetry extends these inputs by treating decisions as **semantic contracts**. It bridges the gap between low-level infrastructure observability (OTel) and high-level business analytics (Data Contracts).
+
+---
+
+## 9. Toward a universal standard
+
+For decision telemetry to reach its full potential, decision contracts are designed to function as a shared vocabulary. A universal schema allows interoperability across systems, organizations, and industries.
+
+The path forward resembles earlier infrastructure standards: open specification, reference implementations, and community-driven evolution. As adoption grows, decision telemetry can serve as a fundamental layer, similar to metrics and tracing in modern systems.
 
 Standardization does not constrain innovation. It creates a stable semantic layer on which innovation compounds.
 
@@ -212,3 +311,13 @@ Decision telemetry proposes a simple shift: emit reasoning at the moment it occu
 When decisions are declared explicitly, analytics stops being archaeology. It becomes architecture.
 
 And architecture scales.
+
+---
+
+## 10. References
+
+1.  **OpenTelemetry Project**, "OpenTelemetry Specification," v1.38.0, 2024. [https://opentelemetry.io/docs/specs/otel/](https://opentelemetry.io/docs/specs/otel/).
+2.  **Chad Sanderson, Mark Freeman, and B. E. Schmidt**, "Data Contracts: Developing Production-Grade Pipelines at Scale," O'Reilly Media, 2025.
+3.  **The European Union**, "Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence," Official Journal of the European Union, L, 2024/1689, 12.7.2024. [http://data.europa.eu/eli/reg/2024/1689/oj](http://data.europa.eu/eli/reg/2024/1689/oj).
+4.  **Betsy Beyer et al.**, "Site Reliability Engineering: How Google Runs Production Systems," O'Reilly Media, 2016. (See Chapter 4: Service Level Objectives).
+5.  **Open Policy Agent**, "Policy-based control for cloud native environments," [https://www.openpolicyagent.org/](https://www.openpolicyagent.org/).

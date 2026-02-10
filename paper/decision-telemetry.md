@@ -316,8 +316,9 @@ And architecture scales.
 
 ## 10. References
 
+## 10. References
+
 1.  **OpenTelemetry Project**, "OpenTelemetry Specification," v1.38.0, 2024. [https://opentelemetry.io/docs/specs/otel/](https://opentelemetry.io/docs/specs/otel/).
 2.  **Chad Sanderson, Mark Freeman, and B. E. Schmidt**, "Data Contracts: Developing Production-Grade Pipelines at Scale," O'Reilly Media, 2025.
 3.  **The European Union**, "Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence," Official Journal of the European Union, L, 2024/1689, 12.7.2024. [http://data.europa.eu/eli/reg/2024/1689/oj](http://data.europa.eu/eli/reg/2024/1689/oj).
-4.  **Betsy Beyer et al.**, "Site Reliability Engineering: How Google Runs Production Systems," O'Reilly Media, 2016. (See Chapter 4: Service Level Objectives).
-5.  **Open Policy Agent**, "Policy-based control for cloud native environments," [https://www.openpolicyagent.org/](https://www.openpolicyagent.org/).
+4.  **Martin Fowler**, "Event Sourcing," *martinfowler.com*, 2005. [https://martinfowler.com/eaaDev/EventSourcing.html](https://martinfowler.com/eaaDev/EventSourcing.html).

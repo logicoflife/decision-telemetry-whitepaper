@@ -316,8 +316,6 @@ And architecture scales.
 
 ## 10. References
 
-## 10. References
-
 1.  **OpenTelemetry Project**, "OpenTelemetry Specification," v1.38.0, 2024. [https://opentelemetry.io/docs/specs/otel/](https://opentelemetry.io/docs/specs/otel/).
 2.  **Chad Sanderson, Mark Freeman, and B. E. Schmidt**, "Data Contracts: Developing Production-Grade Pipelines at Scale," O'Reilly Media, 2025.
 3.  **The European Union**, "Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence," Official Journal of the European Union, L, 2024/1689, 12.7.2024. [http://data.europa.eu/eli/reg/2024/1689/oj](http://data.europa.eu/eli/reg/2024/1689/oj).

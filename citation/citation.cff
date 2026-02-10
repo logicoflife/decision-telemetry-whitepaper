@@ -3,8 +3,16 @@ title: "Decision Telemetry Architecture"
 authors:
   - family-names: "Sethuraman"
     given-names: "Shobha"
-version: "0.1"
+version: "0.2"
 date-released: 2026-02-09
-license: Apache-2.0
+url: "https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.2.pdf"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Sethuraman"
+    given-names: "Shobha"
+  title: "Decision Telemetry Architecture: A Universal Contract for Analytics-Ready Systems"
+  year: 2026
+  url: "https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.2.pdf"
 abstract: >
   A whitepaper proposing decision contracts as a universal semantic layer for analytics-ready systems.

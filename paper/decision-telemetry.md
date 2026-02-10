@@ -1,9 +1,9 @@
 # Decision Telemetry Architecture
 ## A Universal Contract for Analytics-Ready Systems
 
-**Author:** <Your Name>  
+**Author:** Shobha Sethuraman  
 **Version:** 0.2  
-**Date:** <Date>
+**Date:** 2026-02-09
 
 ---
 

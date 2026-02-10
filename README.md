@@ -3,7 +3,7 @@
 **A Universal Contract for Analytics-Ready Systems**
 
 Author: Shobha Sethuraman  
-Version: 0.2 — Public Draft Proposal
+Version: 0.3 — Production Profile
 
 ---
 

@@ -84,37 +84,7 @@ A decision can be defined as a comprehensive semantic object composed of five co
 4.  **Outcome**: The final result (Approved, Rejected, Flagged).
 5.  **Lineage**: The causal chain of preceding decisions (Parent/Child relationships).
 
-```mermaid
-classDiagram
-    class Decision {
-        +id: UUID
-        +trace_id: UUID
-        +timestamp: Date
-        +tenant_id: String
-    }
-    class Actor {
-        +type: Enum [System, Human, Agent]
-        +id: String
-        +org: String
-    }
-    class Evidence {
-        +key: String
-        +value: Any
-    }
-    class PolicyCheck {
-        +policy: String
-        +result: Enum [Pass, Fail]
-    }
-    class Outcome {
-        +status: String
-        +result: Any
-    }
-
-    Decision --* Actor : has
-    Decision --* Evidence : contains
-    Decision --* PolicyCheck : evaluates
-    Decision --* Outcome : produces
-```
+![Decision Object Diagram](diagrams/decision-object.png)
 
 
 When these elements are emitted intentionally at runtime, the system declares its reasoning rather than forcing analytics to infer it.
@@ -169,21 +139,7 @@ Once a decision is recorded, it is written to an append-only ledger. This guaran
 
 Analytics architecture evolves through recognizable stages of maturity. These stages are not mutually exclusive; they represent an accumulation of capabilities.
 
-```mermaid
-graph LR
-    subgraph Level 1: Reactive
-        L1[Log Cleanup & Archaeology]
-    end
-    subgraph Level 2: Structural
-        L2[Schema Contracts & Validation]
-    end
-    subgraph Level 3: Intentional
-        L3[Decision Telemetry & Ledger]
-    end
-    
-    L1 --> L2
-    L2 --> L3
-```
+![Maturity Model](diagrams/maturity-model.png)
 
 
 ### Level 1 — Reactive Cleanup
@@ -211,30 +167,7 @@ Decision Telemetry Architecture introduces a dedicated semantic layer between pr
 3.  **Decision Ledger**: The core of the architecture is the **Append-Only Ledger**. Unlike mutable databases, the ledger stores the immutable history of decisions. The ledger is a logical architectural concept, not a specific storage technology. It guarantees that reasoning can be audited exactly as it happened.
 4.  **Analytics Consumers**: Downstream systems (Fraud Detections, Compliance Audits, AI Governance) consume from the ledger. They query declared intent rather than inferring behavior from logs.
 
-```mermaid
-graph LR
-    subgraph Producer
-        App[Application Logic]
-        SDK[Decision SDK]
-        App -->|Instruments| SDK
-    end
-
-    subgraph Infrastructure
-        Collector[Telemetry Collector]
-        Ledger[(Append-Only Ledger)]
-        SDK -->|Events| Collector
-        Collector -->|Validated Stream| Ledger
-    end
-
-    subgraph Consumers
-        Audit[Compliance Audit]
-        Fraud[Fraud Detection]
-        Debug[System Debugging]
-        Ledger -->|Query| Audit
-        Ledger -->|Stream| Fraud
-        Ledger -->|Inspect| Debug
-    end
-```
+![Architecture Flow](diagrams/architecture-flow.png)
 
 
 This architecture resembles the evolution of observability systems. Metrics and traces did not replace logs; they added a higher-level abstraction that made system behavior legible. Decision telemetry performs the same function for *intent*.

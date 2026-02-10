@@ -1,11 +1,12 @@
 cff-version: 1.2.0
-title: "Decision Telemetry Architecture"
+message: "If you use this whitepaper, please cite it as below."
 authors:
-  - family-names: "Sethuraman"
-    given-names: "Shobha"
-version: "0.2"
-date-released: 2026-02-09
-url: "https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.2.pdf"
+- family-names: "Sethuraman"
+  given-names: "Shobha"
+title: "Decision Telemetry Whitepaper"
+version: "0.3"
+date-released: 2026-02-10
+url: "https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.3.pdf"
 preferred-citation:
   type: article
   authors:
@@ -13,6 +14,6 @@ preferred-citation:
     given-names: "Shobha"
   title: "Decision Telemetry Architecture: A Universal Contract for Analytics-Ready Systems"
   year: 2026
-  url: "https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.2.pdf"
+  url: "https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.3.pdf"
 abstract: >
   A whitepaper proposing decision contracts as a universal semantic layer for analytics-ready systems.

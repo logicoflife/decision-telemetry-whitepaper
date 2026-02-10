@@ -9,7 +9,9 @@ Version: 0.2 — Public Draft Proposal
 
 ## Overview
 
-Decision Telemetry Architecture proposes a universal contract model for capturing decisions as structured semantic artifacts at runtime.
+Decision Telemetry is an architecture proposal for making distributed systems observable by design. It introduces a semantic contract for decisions — distinct from logs, metrics, or traces — allowing analytics to reconstruction reasoning without guesswork.
+
+> **Status**: Public Draft (v0.3)
 
 Modern analytics systems reconstruct intent from logs, metrics, and scattered events. This paper argues for a structural shift: decisions should be emitted intentionally as first-class objects, allowing analytics systems to consume declared reasoning instead of inferring behavior.
 
@@ -98,8 +100,8 @@ If you reference or build upon this work:
 ```
 Shobha Sethuraman.
 Decision Telemetry Architecture: A Universal Contract for Analytics-Ready Systems.
-Version 0.2, 2026.
-https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.2.pdf
+Version 0.3, 2026.
+https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.3.pdf
 ```
 
 ---

@@ -2,7 +2,7 @@
 ## A Universal Contract for Analytics-Ready Systems
 
 **Author:** Shobha Sethuraman  
-**Version:** 0.2  
+**Version:** 0.3  
 **Date:** 2026-02-09
 
 ---
@@ -243,7 +243,125 @@ The pattern is incremental. Systems can instrument high-value decision points fi
 
 ---
 
-## 6. Practical Implications
+---
+
+## 6. Production Profile: Safe Decision Telemetry in High-Throughput Systems
+
+Decision telemetry is designed to capture reasoning at runtime without compromising system stability. In high-throughput environments — payment gateways, fraud pipelines, AI inference services — observability infrastructure must obey strict performance and safety constraints. A telemetry system that introduces latency or memory pressure becomes an outage vector.
+
+This section defines the production profile of decision telemetry: the operational rules required to ensure that decision recording remains safe under extreme load.
+
+> The core principle is simple: decision telemetry must never be able to take down the host system.
+
+All implementation guidance follows from this invariant.
+
+### Non-Blocking Capture
+
+Decision recording occurs in the application hot path. Any blocking behavior — synchronous network calls, deep object copying, or expensive serialization — directly impacts user latency.
+
+In production systems:
+
+*   decision capture must complete in constant time
+*   export must occur asynchronously
+*   application threads must never wait for telemetry I/O
+
+The SDK performs only minimal validation and enqueues the event into a bounded in-memory buffer. A background worker handles serialization, batching, and transmission to the collector.
+
+This separation ensures that telemetry overhead remains predictable even when downstream infrastructure experiences latency spikes or outages.
+
+### Bounded Memory and Backpressure
+
+Telemetry systems fail not by silence but by explosion. Unbounded buffers allow observability traffic to accumulate until memory exhaustion destabilizes the host application.
+
+The production profile requires:
+
+*   fixed-size ring buffers
+*   explicit payload size limits
+*   capped causal link arrays
+*   drop-on-overflow behavior
+
+When the buffer is full, the oldest events are discarded and a counter metric is incremented. Dropping telemetry is acceptable. Blocking business logic is not.
+
+This mirrors the design philosophy of mature observability systems: telemetry is best-effort, not transactional. Decision telemetry is intentionally best-effort. Preserving application reliability takes precedence over preserving telemetry.
+
+### Evidence Layering
+
+A common failure mode in observability tooling is *payload dumping* — attaching entire application objects to telemetry events. Large mutable objects increase CPU overhead, create privacy risk, and amplify garbage collection pressure.
+
+Decision telemetry enforces a layered evidence model:
+
+1.  **Layer 1 — Causal Core (mandatory)**: A minimal immutable record of the decision: identifiers, timestamp, actor, and outcome. This layer is intentionally small and always captured.
+2.  **Layer 2 — Context (bounded)**: Primitive key-value attributes describing environment or classification. Nested structures and large blobs are disallowed.
+3.  **Layer 3 — References (externalized state)**: Pointers to external systems (URIs, object store keys, warehouse IDs) rather than embedded data. This preserves reconstructability without copying large state into telemetry streams.
+
+This model preserves semantic richness while maintaining predictable performance.
+
+### Fail-Open Isolation
+
+Decision telemetry is non-critical infrastructure. Failures in the telemetry pipeline must never propagate to business logic.
+
+If serialization fails, buffers overflow, or collectors are unavailable:
+
+*   events are dropped
+*   failure metrics are emitted
+*   application execution continues normally
+
+The system degrades observability, not availability.
+
+This isolation is essential in regulated or financial environments where reliability requirements exceed telemetry guarantees.
+
+### Transport and Schema Considerations
+
+Production deployments may choose binary encodings (e.g., Protobuf or Avro) for efficiency, while retaining JSON as a human-readable debug format. The transport format is an implementation detail; the semantic contract remains constant.
+
+Strict schemas stabilize ingestion and enable evolution through versioning. Producers emit decisions optimistically; collectors validate and normalize events before persistence in the append-only decision ledger.
+
+The architecture favors loose coupling:
+
+*   producers focus on fast emission
+*   collectors enforce correctness
+*   ledgers guarantee immutability
+
+### Operational Envelope
+
+A production-safe implementation targets:
+
+*   sub-millisecond p99 capture overhead
+*   sustained high event throughput per instance
+*   fixed upper memory bounds
+*   zero impact on request success rates
+
+These constraints treat decision telemetry as *infrastructure*, not logging.
+
+### Anti-Patterns to Avoid
+
+The following practices violate the production profile:
+
+*   synchronous HTTP export in request threads
+*   deep copying complex objects
+*   embedding full request or user objects in payloads
+*   unbounded arrays or recursive structures
+*   retry loops in the application hot path
+
+These patterns convert observability into a reliability risk.
+
+### Why the Production Profile Matters
+
+Decision telemetry’s value lies in making reasoning observable. That value disappears if the instrumentation itself destabilizes the system it observes.
+
+By enforcing non-blocking capture, bounded memory, layered evidence, and fail-open isolation, decision telemetry becomes safe to deploy in the environments where explainability matters most.
+
+This production profile ensures that intentional analytics does not come at the cost of operational safety.
+
+Telemetry remains best-effort. Architecture remains reliable.
+
+And the system remains legible.
+
+The production profile follows principles established in resilient systems design literature. Patterns such as non-blocking capture and bounded buffers are widely recommended for production software to prevent observability systems from amplifying failure conditions. Reliability engineering practice likewise emphasizes that telemetry must degrade gracefully rather than compromise availability. Decision telemetry adopts these constraints as architectural invariants, aligning with established production safety guidance [5][6].
+
+---
+
+## 7. Practical Implications
 
 The practical impact of decision telemetry is most visible in domains where explainability is essential.
 
@@ -267,7 +385,7 @@ In each case, the benefit is not new analytics capability. It is the removal of 
 
 ---
 
-## 7. Reference Implementation
+## 8. Reference Implementation
 
 The Decision Trace SDK provides a reference implementation of decision telemetry concepts. It demonstrates that decision contracts can be emitted with minimal overhead and integrated incrementally into existing systems.
 
@@ -277,7 +395,7 @@ Multiple implementations could exist. The value lies in the contract, not the to
 
 ---
 
-## 8. Related Work
+## 9. Related Work
 
 Decision telemetry does not exist in a vacuum. It builds upon and extends several established disciplines:
 
@@ -292,7 +410,7 @@ Decision telemetry does not exist in a vacuum. It builds upon and extends severa
 
 ---
 
-## 9. Toward a Universal Standard
+## 10. Toward a Universal Standard
 
 For decision telemetry to reach its full potential, decision contracts are designed to function as a shared vocabulary. A universal schema allows interoperability across systems, organizations, and industries.
 
@@ -314,9 +432,11 @@ And architecture scales.
 
 ---
 
-## 10. References
+## 11. References
 
 1.  **OpenTelemetry Project**, "OpenTelemetry Specification," v1.38.0, 2024. [https://opentelemetry.io/docs/specs/otel/](https://opentelemetry.io/docs/specs/otel/).
 2.  **Chad Sanderson, Mark Freeman, and B. E. Schmidt**, "Data Contracts: Developing Production-Grade Pipelines at Scale," O'Reilly Media, 2025.
 3.  **The European Union**, "Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence," Official Journal of the European Union, L, 2024/1689, 12.7.2024. [http://data.europa.eu/eli/reg/2024/1689/oj](http://data.europa.eu/eli/reg/2024/1689/oj).
 4.  **Martin Fowler**, "Event Sourcing," *martinfowler.com*, 2005. [https://martinfowler.com/eaaDev/EventSourcing.html](https://martinfowler.com/eaaDev/EventSourcing.html).
+5.  **Michael T. Nygard**, "Release It!: Design and Deploy Production-Ready Software," Pragmatic Bookshelf, 2018.
+6.  **Betsy Beyer, Chris Jones, Jennifer Petoff, and Niall Richard Murphy**, "Site Reliability Engineering: How Google Runs Production Systems," O'Reilly Media, 2016. [https://sre.google/books/](https://sre.google/books/).

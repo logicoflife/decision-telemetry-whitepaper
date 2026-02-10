@@ -170,7 +170,7 @@ Once a decision is recorded, it is written to an append-only ledger. This guaran
 Analytics architecture evolves through recognizable stages of maturity. These stages are not mutually exclusive; they represent an accumulation of capabilities.
 
 ```mermaid
-graph TD
+graph LR
     subgraph Level 1: Reactive
         L1[Log Cleanup & Archaeology]
     end

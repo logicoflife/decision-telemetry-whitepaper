@@ -1,11 +1,29 @@
-graph TD
-    D[Decision]
-    O[Outcome]
-    E[Evidence]
-    L[Lineage]
-    C[Context]
+classDiagram
+    class Decision {
+        +id: UUID
+        +trace_id: UUID
+        +timestamp: Date
+        +tenant_id: String
+    }
+    class Actor {
+        +type: Enum [System, Human, Agent]
+        +id: String
+        +org: String
+    }
+    class Evidence {
+        +key: String
+        +value: Any
+    }
+    class PolicyCheck {
+        +policy: String
+        +result: Enum [Pass, Fail]
+    }
+    class Outcome {
+        +status: String
+        +result: Any
+    }
 
-    D --> O
-    D --> E
-    D --> L
-    D --> C
+    Decision --* Actor : has
+    Decision --* Evidence : contains
+    Decision --* PolicyCheck : evaluates
+    Decision --* Outcome : produces

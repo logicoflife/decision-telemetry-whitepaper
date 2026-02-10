@@ -7,6 +7,17 @@
 
 ---
 
+## Executive Summary
+
+Modern analytics teams spend enormous effort reconstructing decisions from logs, events, and scattered artifacts. This reactive model turns analytics into archaeology: pipelines compensate for upstream ambiguity, investigations rely on reverse engineering, and explainability becomes expensive.
+
+This paper argues that analytics maturity requires a structural shift. Decisions must be emitted as first-class semantic objects at runtime rather than inferred after the fact. We introduce decision contracts — a standardized representation of outcomes, evidence, and lineage — and describe an architecture pattern that makes analytics-ready systems intentional by design.
+
+Decision telemetry does not replace existing observability or data contracts. It adds a semantic layer that allows analytics systems to consume declared intent instead of reconstructing behavior. The result is faster investigations, clearer audit trails, and predictable analytics pipelines.
+
+This paper presents a maturity model, architectural framework, and reference implementation demonstrating how decision contracts can function as a universal standard for analytics-driven systems.
+
+
 ## Abstract
 
 Modern analytics systems operate in a fundamentally reactive mode: they reconstruct decisions after the fact from logs, events, and partial artifacts. This creates fragile pipelines, high investigation cost, and limited explainability in domains such as fraud detection, compliance, and AI-driven systems. While data contracts have improved structural stability, they address schema integrity rather than semantic intent. This paper argues that decisions themselves must become first-class architectural objects.
@@ -55,50 +66,63 @@ The next stage of maturity requires contracts that express semantics, not only s
 
 All software systems that interact with the real world are decision systems. They classify, approve, reject, route, score, escalate, and prioritize. These decisions already exist as executable logic, but they rarely exist as explicit data objects.
 
-A decision can be defined as a semantic object composed of four elements:
+A decision can be defined as a comprehensive semantic object composed of five core elements:
 
-**Decision = outcome + evidence + context + lineage**
+**Decision = Context + Actor + Logic + Outcome + Lineage**
 
-- **Outcome** — the result of the decision  
-- **Evidence** — inputs or signals used  
-- **Context** — environmental or system state  
-- **Lineage** — parent decisions or dependencies
+1.  **Context**: The environmental state (Timestamp, System Version, Environment).
+2.  **Actor**: The entity responsible for the decision (System, AI Agent, or Human).
+3.  **Logic**: The evidence used and policies evaluated (Rules, Model Scores, Checks).
+4.  **Outcome**: The final result (Approved, Rejected, Flagged).
+5.  **Lineage**: The causal chain of preceding decisions (Parent/Child relationships).
 
 When these elements are emitted intentionally at runtime, the system declares its reasoning rather than forcing analytics to infer it.
 
-A *decision contract* is the standardized representation of this object. It is not a logging convention. It is a semantic declaration that a meaningful decision has occurred.
+A *decision contract* is the standardized representation of this object. It is not a logging convention. It is a semantic declaration that a meaningful decision has occurred, recorded in an append-only ledger.
 
 This shift transforms decisions from implicit side effects into explicit artifacts. Analytics systems no longer reverse engineer intent; they consume it directly. Investigations become queries against declared reasoning rather than forensic reconstruction.
 
-The key architectural move is recognizing that decisions are not merely implementation details. They are first-class entities worthy of stable interfaces.
+## 3.1 Anatomy of a Decision Event
 
----
+To make this concrete, a decision is not a single log line but a structured event containing specific fields. Below is a JSON representation of a decision outcome event as defined in the reference implementation:
 
-## 3.1 Architectural properties of decision contracts
+```json
+{
+  "event_type": "decision.outcome",
+  "decision_id": "dec_01HQK4K...",
+  "trace_id": "trc_01HQK4L...",
+  "timestamp": "2026-02-09T14:30:00Z",
+  "actor": {
+    "type": "system",
+    "id": "risk_engine_v2"
+  },
+  "payload": {
+    "status": "approved",
+    "risk_score": 0.05
+  },
+  "causal_links": [
+    {
+      "type": "triggered_by",
+      "target_decision_id": "dec_PREV..."
+    }
+  ]
+}
+```
 
-For decision telemetry to function as a reliable semantic layer, decision contracts must satisfy a set of architectural properties independent of implementation.
+This strict schema ensures that every decision - whether from a microservice, a monolith, or an AI agent - looks identical to the analytics layer.
+
+## 3.2 Safety and Privacy by Design
+
+A critical requirement for decision telemetry is safety. Recording decisions must never compromise the system's stability or the user's privacy.
+
+### PII Redaction
+Decision payloads often contain sensitive data (names, emails, tokens). The telemetry layer must support automatic redaction of Personally Identifiable Information (PII) at the source, before the event leaves the producer system.
+
+### Failure Isolation
+Telemetry is a non-critical path. If the decision recording infrastructure fails (e.g., the collector is down), the application must continue to function normally. The SDK isolates telemetry errors, ensuring that observability issues never cause business logic failures.
 
 ### Immutability
-
-A decision contract represents a historical artifact. Once emitted, it must not be mutated. This guarantees that investigations, audits, and analytics queries operate on stable records of reasoning rather than evolving state.
-
-### Snapshot semantics
-
-A decision captures the reasoning context at the moment it occurs. Evidence, inputs, and environmental conditions are recorded as a snapshot rather than referenced indirectly. This prevents future system changes from altering the historical interpretation of a decision.
-
-### Semantic vocabulary
-
-Decision contracts rely on a standardized vocabulary for outcomes, evidence, and lineage. Downstream consumers should interpret decisions consistently regardless of producer implementation. Semantic consistency is a requirement for interoperability.
-
-### Lineage preservation
-
-Decisions frequently depend on prior decisions. Contracts must encode parent-child relationships explicitly, enabling reconstruction of causal chains across distributed systems.
-
-### Consumer independence
-
-Decision contracts must stand independently of producer internals. Analytics systems should not require access to application logic to interpret a decision. The contract itself must contain sufficient semantic information.
-
----
+Once a decision is recorded, it is written to an append-only ledger. This guarantees that the history of reasoning cannot be altered, providing a reliable audit trail for compliance and governance.
 
 ## 4. Analytics maturity model
 
@@ -124,11 +148,12 @@ This model does not replace earlier stages. Structural contracts remain essentia
 
 Decision Telemetry Architecture introduces a dedicated semantic layer between producer systems and analytics consumers.
 
-Producer systems instrument decision points explicitly. At the moment a decision occurs, a decision contract is emitted containing outcome, evidence, context, and lineage. These contracts flow through telemetry pipelines as first-class objects.
+1.  **Producer Systems**: Application code instruments decision points using an SDK. At the moment a decision occurs, it emits a structured event (Start, Evidence, Policy Check, Outcome).
+2.  **Collector**: A lightweight agent receives these events, validates them against the schema, and buffers them for efficient transmission.
+3.  **Decision Ledger**: The core of the architecture is the **Append-Only Ledger**. Unlike mutable databases, the ledger stores the immutable history of decisions. It guarantees that reasoning can be audited exactly as it happened.
+4.  **Analytics Consumers**: Downstream systems (Fraud Detections, Compliance Audits, AI Governance) consume from the ledger. They query declared intent rather than inferring behavior from logs.
 
-Analytics systems consume decision contracts directly. They no longer depend on fragile reconstruction logic. Fraud analysis, debugging, and audit workflows query declared reasoning rather than implicit behavior.
-
-This architecture resembles the evolution of observability systems. Metrics and traces did not replace logs; they added a higher-level abstraction that made system behavior legible. Decision telemetry performs the same function for intent.
+This architecture resembles the evolution of observability systems. Metrics and traces did not replace logs; they added a higher-level abstraction that made system behavior legible. Decision telemetry performs the same function for *intent*.
 
 The pattern is incremental. Systems can instrument high-value decision points first, expanding coverage over time. Adoption does not require rewriting existing architecture; it requires declaring semantics where they already exist.
 

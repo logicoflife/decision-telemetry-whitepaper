@@ -1,6 +1,13 @@
 graph TD
-    A[Level 1: Cleanup Analytics]
-    B[Level 2: Data Contracts]
-    C[Level 3: Decision Telemetry]
-
-    A --> B --> C
+    subgraph Level 1: Reactive
+        L1[Log Cleanup & Archaeology]
+    end
+    subgraph Level 2: Structural
+        L2[Schema Contracts & Validation]
+    end
+    subgraph Level 3: Intentional
+        L3[Decision Telemetry & Ledger]
+    end
+    
+    L1 --> L2
+    L2 --> L3

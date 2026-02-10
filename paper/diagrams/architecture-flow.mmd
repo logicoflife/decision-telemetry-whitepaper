@@ -1,6 +1,22 @@
 graph LR
-    P[Producer Systems]
-    D[Decision Contracts]
-    A[Analytics Systems]
+    subgraph Producer
+        App[Application Logic]
+        SDK[Decision SDK]
+        App -->|Instruments| SDK
+    end
 
-    P --> D --> A
+    subgraph Infrastructure
+        Collector[Telemetry Collector]
+        Ledger[(Append-Only Ledger)]
+        SDK -->|Events| Collector
+        Collector -->|Validated Stream| Ledger
+    end
+
+    subgraph Consumers
+        Audit[Compliance Audit]
+        Fraud[Fraud Detection]
+        Debug[System Debugging]
+        Ledger -->|Query| Audit
+        Ledger -->|Stream| Fraud
+        Ledger -->|Inspect| Debug
+    end

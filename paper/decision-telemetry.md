@@ -5,13 +5,13 @@
 **Version:** 0.4  
 **Date:** 2026-02-16
 
----
+
 
 ## Executive Summary
 
 Modern analytics teams spend enormous effort reconstructing decisions from logs, events, and scattered artifacts. This reactive model turns analytics into archaeology: pipelines compensate for upstream ambiguity, investigations rely on reverse engineering, and explainability becomes expensive.
 
-This paper argues that analytics maturity requires a structural shift. Decisions must be emitted as first-class semantic objects at runtime rather than inferred after the fact. We introduce decision contracts — a standardized representation of outcomes, evidence, and lineage — and describe an architecture pattern that makes analytics-ready systems intentional by design.
+This paper argues that analytics maturity requires a structural shift. Decisions must be emitted as first-class semantic objects at runtime rather than inferred after the fact. We introduce decision contracts - a standardized representation of outcomes, evidence, and lineage - and describe an architecture pattern that makes analytics-ready systems intentional by design.
 
 Decision telemetry does not replace existing observability or data contracts. It adds a semantic layer that allows analytics systems to consume declared intent instead of reconstructing behavior. The result is faster investigations, clearer audit trails, and predictable analytics pipelines.
 
@@ -22,9 +22,9 @@ This paper presents a maturity model, architectural framework, and reference imp
 
 Modern analytics systems operate in a fundamentally reactive mode: they reconstruct decisions after the fact from logs, events, and partial artifacts. This creates fragile pipelines, high investigation cost, and limited explainability in domains such as fraud detection, compliance, and AI-driven systems. While data contracts have improved structural stability, they address schema integrity rather than semantic intent. This paper argues that decisions themselves must become first-class architectural objects.
 
-We introduce the concept of *decision contracts*: a standardized runtime representation of outcomes, evidence, and lineage that is emitted at the moment a decision occurs. Decision contracts allow analytics systems to consume intent directly rather than infer it indirectly. We propose a three-stage analytics maturity model — reactive cleanup, structural contracts, and intentional decision instrumentation — and describe an architecture pattern intended to enable analytics-ready systems by design. A reference implementation demonstrates the practicality of this approach and suggests a path toward a universal decision telemetry standard.
+We introduce the concept of *decision contracts*: a standardized runtime representation of outcomes, evidence, and lineage that is emitted at the moment a decision occurs. Decision contracts allow analytics systems to consume intent directly rather than infer it indirectly. We propose a three-stage analytics maturity model - reactive cleanup, structural contracts, and intentional decision instrumentation - and describe an architecture pattern intended to enable analytics-ready systems by design. A reference implementation demonstrates the practicality of this approach and suggests a path toward a universal decision telemetry standard.
 
----
+
 
 ## 1. The Hidden Tax of Reactive Analytics
 
@@ -38,19 +38,19 @@ As systems grow more automated and AI-driven, this gap widens. The cost of recon
 
 ## 1.1 The Urgency of Now
 
-While the emerging discourse on **Context Graphs** and the **"Two Clocks Problem"** has recently amplified the need for capturing decision-logic in agentic systems, this gap has long been a fundamental bottleneck in the analytics world. For decades, analytics teams have been forced into "forensic archaeology"—attempting to reconstruct intent from fragmented logs and state changes. **Decision Telemetry** addresses this historical debt by providing a universal architecture that ensures intent is declared as a first-class object at runtime rather than inferred after the fact.
+While the emerging discourse on **Context Graphs** and the **"Two Clocks Problem"** has recently amplified the need for capturing decision-logic in agentic systems, this gap has long been a fundamental bottleneck in the analytics world. For decades, analytics teams have been forced into "forensic archaeology"-attempting to reconstruct intent from fragmented logs and state changes. **Decision Telemetry** addresses this historical debt by providing a universal architecture that ensures intent is declared as a first-class object at runtime rather than inferred after the fact.
 
 This technical debt has now evolved into a **strategic risk** driven by three converging trends:
 
-1.  [cite_start]**Shift to Probabilistic Systems**: AI agents and LLMs produce outputs that cannot be audited by reading code alone; understanding these actions requires an immutable trace of the context and logic used at the moment of execution.
-2.  **Complexity of Automated Pipelines**: Modern workflows, such as fraud detection, are complex DAGs of rules and ML models. [cite_start]Debugging a single outcome now requires tracing a path through dozens of independent, opaque components.
-3.  **Regulatory Mandates for Explainability**: New frameworks like the EU AI Act and financial compliance regulations demand more than just logs; they require a mechanical proof of *why* a decision was made. [cite_start]Organizations can no longer rely on downstream reconstruction to meet legal evidentiary standards.
+1.  **Shift to Probabilistic Systems**: AI agents and LLMs produce outputs that cannot be audited by reading code alone; understanding these actions requires an immutable trace of the context and logic used at the moment of execution.
+2.  **Complexity of Automated Pipelines**: Modern workflows, such as fraud detection, are complex DAGs of rules and ML models. Debugging a single outcome now requires tracing a path through dozens of independent, opaque components.
+3.  **Regulatory Mandates for Explainability**: New frameworks like the EU AI Act and financial compliance regulations demand more than just logs; they require a mechanical proof of *why* a decision was made [3]. Organizations can no longer rely on downstream reconstruction to meet legal evidentiary standards.
 
----
+The next section examines why structural data contracts alone cannot resolve this limitation [2].
 
 ## 2. Limits of Structural Data Contracts
 
-The introduction of data contracts represents an important maturity step for analytics systems. By establishing explicit schema guarantees, organizations reduce accidental breakage and improve producer accountability. Structural contracts create predictability in data pipelines and prevent downstream failures caused by undocumented changes.
+The introduction of data contracts represents an important maturity step for analytics systems [2]. By establishing explicit schema guarantees, organizations reduce accidental breakage and improve producer accountability. Structural contracts create predictability in data pipelines and prevent downstream failures caused by undocumented changes.
 
 However, structural stability is not equivalent to semantic clarity.
 
@@ -70,7 +70,7 @@ This distinction is critical. Structural contracts stabilize pipelines, but they
 
 The next stage of maturity requires contracts that express semantics, not only structure.
 
----
+
 
 ## 3. Decisions as First-Class Objects
 
@@ -168,7 +168,7 @@ Telemetry is a non-critical path. If the decision recording infrastructure fails
 ### 3.2.3 Immutability
 Once a decision is recorded, it is written to an append-only ledger. This guarantees that the history of reasoning cannot be altered, providing a reliable audit trail for compliance and governance.
 
----
+
 
 ## 4. Analytics Maturity Model
 
@@ -192,21 +192,21 @@ graph LR
 *Figure 2: Analytics Maturity Model*
 
 
-### 4.1 Level 1 — Reactive Cleanup
+### 4.1 Level 1 - Reactive Cleanup
 
 At this stage, analytics reconstructs decisions from artifacts. Pipelines compensate for inconsistent upstream emissions. Knowledge of system behavior is embedded in transformation logic and institutional memory. Analytics functions as archaeology.
 
-### 4.2 Level 2 — Structural Contracts
+### 4.2 Level 2 - Structural Contracts
 
 Here, organizations introduce schema guarantees and producer accountability. Pipelines become stable. Breakage decreases. However, intent remains implicit. Analytics consumes structured artifacts but still performs semantic inference.
 
-### 4.3 Level 3 — Intentional Decision Telemetry
+### 4.3 Level 3 - Intentional Decision Telemetry
 
 In the final stage, decisions are emitted as structured semantic objects. Producers instrument decision contracts directly. Analytics consumes declared intent rather than reconstructing it. Explainability, auditability, and investigation speed improve as a consequence of architecture, not heroics.
 
 This model does not replace earlier stages. Structural contracts remain essential. Decision telemetry builds on that foundation by adding meaning to structure.
 
----
+
 
 ## 5. Decision Telemetry Architecture Pattern
 
@@ -248,11 +248,11 @@ This architecture resembles the evolution of observability systems. Metrics and 
 
 The pattern is incremental. Systems can instrument high-value decision points first, expanding coverage over time. Adoption does not require rewriting existing architecture; it requires declaring semantics where they already exist.
 
----
+
 
 ## 6. Production Profile: Safe Decision Telemetry in High-Throughput Systems
 
-Decision telemetry is designed to capture reasoning at runtime without compromising system stability. In high-throughput environments — payment gateways, fraud pipelines, AI inference services — observability infrastructure must obey strict performance and safety constraints. A telemetry system that introduces latency or memory pressure becomes an outage vector.
+Decision telemetry is designed to capture reasoning at runtime without compromising system stability. In high-throughput environments - payment gateways, fraud pipelines, AI inference services - observability infrastructure must obey strict performance and safety constraints. A telemetry system that introduces latency or memory pressure becomes an outage vector.
 
 This section defines the production profile of decision telemetry: the operational rules required to ensure that decision recording remains safe under extreme load.
 
@@ -262,7 +262,7 @@ All implementation guidance follows from this invariant.
 
 ### 6.1 Non-Blocking Capture
 
-Decision recording occurs in the application hot path. Any blocking behavior — synchronous network calls, deep object copying, or expensive serialization — directly impacts user latency.
+Decision recording occurs in the application hot path. Any blocking behavior - synchronous network calls, deep object copying, or expensive serialization - directly impacts user latency.
 
 In production systems:
 
@@ -291,13 +291,13 @@ This mirrors the design philosophy of mature observability systems: telemetry is
 
 ### 6.3 Evidence Layering
 
-A common failure mode in observability tooling is *payload dumping* — attaching entire application objects to telemetry events. Large mutable objects increase CPU overhead, create privacy risk, and amplify garbage collection pressure.
+A common failure mode in observability tooling is *payload dumping* - attaching entire application objects to telemetry events. Large mutable objects increase CPU overhead, create privacy risk, and amplify garbage collection pressure.
 
 Decision telemetry enforces a layered evidence model:
 
-1.  **Layer 1 — Causal Core (mandatory)**: A minimal immutable record of the decision: identifiers, timestamp, actor, and outcome. This layer is intentionally small and always captured.
-2.  **Layer 2 — Context (bounded)**: Primitive key-value attributes describing environment or classification. Nested structures and large blobs are disallowed.
-3.  **Layer 3 — References (externalized state)**: Pointers to external systems (URIs, object store keys, warehouse IDs) rather than embedded data. This preserves reconstructability without copying large state into telemetry streams.
+1.  **Layer 1 - Causal Core (mandatory)**: A minimal immutable record of the decision: identifiers, timestamp, actor, and outcome. This layer is intentionally small and always captured.
+2.  **Layer 2 - Context (bounded)**: Primitive key-value attributes describing environment or classification. Nested structures and large blobs are disallowed.
+3.  **Layer 3 - References (externalized state)**: Pointers to external systems (URIs, object store keys, warehouse IDs) rather than embedded data. This preserves reconstructability without copying large state into telemetry streams.
 
 This model preserves semantic richness while maintaining predictable performance.
 
@@ -362,86 +362,93 @@ Telemetry remains best-effort. Architecture remains reliable.
 
 And the system remains legible.
 
-The production profile follows principles established in resilient systems design literature. Patterns such as non-blocking capture and bounded buffers are widely recommended for production software to prevent observability systems from amplifying failure conditions. Reliability engineering practice likewise emphasizes that telemetry must degrade gracefully rather than compromise availability. Decision telemetry adopts these constraints as architectural invariants, aligning with established production safety guidance [5][6].
+The production profile follows principles established in resilient systems design literature. Patterns such as non-blocking capture and bounded buffers are widely recommended for production software to prevent observability systems from amplifying failure conditions. Reliability engineering practice likewise emphasizes that telemetry must degrade gracefully rather than compromise availability. Decision telemetry adopts these constraints as architectural invariants, aligning with established production safety guidance [5], [6].
 
----
+
 
 ## 7. Practical Implications
 
 The practical impact of decision telemetry is most visible in domains where explainability is essential.
 
-### Fraud Systems
+### 7.1 Fraud Systems
 
 Fraud investigations often reconstruct rule chains and model reasoning from scattered artifacts. Decision contracts collapse this process into a single semantic object. Investigation time decreases, and rule tuning becomes data-driven rather than inferential.
 
-### AI Governance
+### 7.2 AI Governance
 
 AI-driven systems face increasing demands for explainability. Decision telemetry provides a structured audit trail of reasoning inputs and outputs. Governance shifts from post-hoc interpretation to runtime transparency.
 
-### Compliance and Audit
+### 7.3 Compliance and Audit
 
 Regulatory environments require reproducible explanations. Decision contracts encode reasoning as data, enabling mechanical audit rather than manual reconstruction.
 
-### Debugging Distributed Systems
+### 7.4 Debugging Distributed Systems
 
 Complex systems fail through cascades of decisions. Lineage-aware decision telemetry reveals causal chains that logs alone obscure.
 
 In each case, the benefit is not new analytics capability. It is the removal of interpretive friction.
 
----
+
 
 ## 8. Reference Implementation
 
-The Decision Trace SDK provides a reference implementation of decision telemetry concepts. It demonstrates that decision contracts can be emitted with minimal overhead and integrated incrementally into existing systems.
+The Decision Trace SDK provides a reference implementation of decision telemetry concepts [7]. It demonstrates that decision contracts can be emitted with minimal overhead and integrated incrementally into existing systems.
 
 The implementation is not the architecture. It is evidence that the architecture is practical.
 
 Multiple implementations could exist. The value lies in the contract, not the tool.
 
----
+
 
 ## 9. Related Work
 
 Decision telemetry does not exist in a vacuum. It builds upon and extends several established disciplines:
 
--   **Structured Logging**: Provides the format (JSON) but lacks the semantic schema for decisions. Logs tell you *what* happened, not *why*.
--   **OpenTelemetry (OTel)**: Solves the distributed context propagation problem (traces/spans) but focuses on *latency* and *errors*. Decision telemetry leverages OTel's context propagation but adds a semantic layer for *business logic*.
--   **Data Contracts**: Enforce schema stability for analytics but often miss the diverse runtime context of a decision. Decision contracts are a specialized form of data contract focused on reasoning.
--   **Event Sourcing**: Records state changes. Decisions are often the *cause* of state changes. Recording the decision (the "why") complements the event (the "what").
--   **Audit Trails**: Traditionally separate, manual, and partial. Decision telemetry makes audit trails a natural byproduct of the system's operation.
--   **Explainable AI (XAI)**: Focuses on model weights and features. Decision telemetry captures the *system* context around the model, including policy overrides and human-in-the-loop actions.
+-   **Structured Logging**: Provides the format (JSON) but lacks the semantic schema for decisions. Logs tell you *what* happened, not *why* [4].
+-   **OpenTelemetry (OTel)**: Solves the distributed context propagation problem (traces/spans) but focuses on *latency* and *errors*. Decision telemetry leverages OTel's context propagation but adds a semantic layer for *business logic* [1].
+-   **Data Contracts**: Enforce schema stability for analytics but often miss the diverse runtime context of a decision. Decision contracts are a specialized form of data contract focused on reasoning [2].
+-   **Event Sourcing**: Records state changes. Decisions are often the *cause* of state changes. Recording the decision (the "why") complements the event (the "what") [4].
+-   **Audit Trails**: Traditionally separate, manual, and partial. Decision telemetry makes audit trails a natural byproduct of the system's operation [6].
+-   **Explainable AI (XAI)**: Focuses on model weights and features. Decision telemetry captures the *system* context around the model, including policy overrides and human-in-the-loop actions [3].
 
 **Synthesis**: Decision telemetry extends these inputs by treating decisions as **semantic contracts**. It bridges the gap between low-level infrastructure observability (OTel) and high-level business analytics (Data Contracts).
 
----
+
 
 ## 10. Toward a Universal Standard
 
-For decision telemetry to reach its full potential, it must move beyond agent-specific memory. While the rise of autonomous agents has highlighted the urgency of capturing reasoning traces, the requirement for an immutable, semantic record of intent is universal across all modern software. [cite_start]**Decision Telemetry** provides the standardized vocabulary required to bridge legacy microservices, manual human approvals, and autonomous agents into a single, analytics-ready governance layer. 
+For decision telemetry to reach its full potential, it must move beyond agent-specific memory. While the rise of autonomous agents has highlighted the urgency of capturing reasoning traces, the requirement for an immutable, semantic record of intent is universal across all modern software. **Decision Telemetry** provides the standardized vocabulary required to bridge legacy microservices, manual human approvals, and autonomous agents into a single, analytics-ready governance layer. 
 
-A universal schema allows interoperability across systems, organizations, and industries. [cite_start]The path forward resembles earlier infrastructure standards: open specification, reference implementations, and community-driven evolution. [cite_start]As adoption grows, decision telemetry can serve as a fundamental layer, similar to metrics and tracing in modern systems.
+A universal schema allows interoperability across systems, organizations, and industries. The path forward resembles earlier infrastructure standards: open specification, reference implementations, and community-driven evolution. As adoption grows, decision telemetry can serve as a fundamental layer, similar to metrics and tracing in modern systems [1].
 
-Standardization does not constrain innovation. [cite_start]It creates a stable semantic layer on which innovation compounds.
+Standardization does not constrain innovation. It creates a stable semantic layer on which innovation compounds.
 
----
 
-## Conclusion
+
+## 11. Conclusion
 
 Modern analytics spends enormous effort reconstructing intent from artifacts. This is not an inevitability of distributed systems. It is a consequence of architecture that ignores decisions as first-class objects.
 
-Decision telemetry proposes a simple shift: emit reasoning at the moment it occurs.
+Decision telemetry proposes a simple shift: emit reasoning at the moment it occurs. This shift aligns analytics systems with modern observability and reliability principles that treat runtime behavior as a first-class architectural concern [1], [6].
 
 When decisions are declared explicitly, analytics stops being archaeology. It becomes architecture.
 
 And architecture scales.
 
----
 
-## 11. References
 
-1.  **OpenTelemetry Project**, "OpenTelemetry Specification," v1.38.0, 2024. [https://opentelemetry.io/docs/specs/otel/](https://opentelemetry.io/docs/specs/otel/).
-2.  **Chad Sanderson, Mark Freeman, and B. E. Schmidt**, "Data Contracts: Developing Production-Grade Pipelines at Scale," O'Reilly Media, 2025.
-3.  **The European Union**, "Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence," Official Journal of the European Union, L, 2024/1689, 12.7.2024. [http://data.europa.eu/eli/reg/2024/1689/oj](http://data.europa.eu/eli/reg/2024/1689/oj).
-4.  **Martin Fowler**, "Event Sourcing," *martinfowler.com*, 2005. [https://martinfowler.com/eaaDev/EventSourcing.html](https://martinfowler.com/eaaDev/EventSourcing.html).
-5.  **Michael T. Nygard**, "Release It!: Design and Deploy Production-Ready Software," Pragmatic Bookshelf, 2018.
-6.  **Betsy Beyer, Chris Jones, Jennifer Petoff, and Niall Richard Murphy**, "Site Reliability Engineering: How Google Runs Production Systems," O'Reilly Media, 2016. [https://sre.google/books/](https://sre.google/books/).
+## References
+
+[1] OpenTelemetry Project, “OpenTelemetry Specification,” v1.38.0, 2024. [Online]. Available: https://opentelemetry.io/docs/specs/otel/
+
+[2] C. Sanderson, M. Freeman, and B. E. Schmidt, *Data Contracts: Developing Production-Grade Pipelines at Scale*. O’Reilly Media, 2025.
+
+[3] European Union, “Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence,” Official Journal of the European Union, 2024. [Online]. Available: http://data.europa.eu/eli/reg/2024/1689/oj
+
+[4] M. Fowler, Event Sourcing, 2005. [Online]. Available: https://martinfowler.com/eaaDev/EventSourcing.html
+
+[5] M. T. Nygard, *Release It!: Design and Deploy Production-Ready Software*. Pragmatic Bookshelf, 2018.
+
+[6] B. Beyer, C. Jones, J. Petoff, and N. R. Murphy, *Site Reliability Engineering: How Google Runs Production Systems*. O’Reilly Media, 2016. [Online]. Available: https://sre.google/books/
+
+[7] S. Sethuraman, “Decision Trace SDK,” GitHub repository, 2026. [Online]. Available: https://github.com/logicoflife/decision-trace

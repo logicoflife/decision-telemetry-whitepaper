@@ -11,7 +11,7 @@
 
 Modern analytics teams spend enormous effort reconstructing decisions from logs, events, and scattered artifacts. This reactive model turns analytics into archaeology: pipelines compensate for upstream ambiguity, investigations rely on reverse engineering, and explainability becomes expensive.
 
-This paper argues that analytics maturity requires a structural shift. Decisions must be emitted as first-class semantic objects at runtime rather than inferred after the fact. We introduce decision contracts - a standardized representation of outcomes, evidence, and lineage - and describe an architecture pattern that makes analytics-ready systems intentional by design.
+This paper argues that analytics maturity requires a structural shift. Decisions must be emitted as first-class semantic objects at runtime rather than inferred after the fact. We introduce decision contracts as a standardized representation of outcomes, evidence, and lineage, and describes an architecture pattern that makes analytics-ready systems intentional by design.
 
 Decision telemetry does not replace existing observability or data contracts. It adds a semantic layer that allows analytics systems to consume declared intent instead of reconstructing behavior. The result is faster investigations, clearer audit trails, and predictable analytics pipelines.
 
@@ -38,7 +38,7 @@ As systems grow more automated and AI-driven, this gap widens. The cost of recon
 
 ## 1.1 The Urgency of Now
 
-While the emerging discourse on **Context Graphs** and the **"Two Clocks Problem"** has recently amplified the need for capturing decision-logic in agentic systems, this gap has long been a fundamental bottleneck in the analytics world. For decades, analytics teams have been forced into "forensic archaeology"-attempting to reconstruct intent from fragmented logs and state changes. **Decision Telemetry** addresses this historical debt by providing a universal architecture that ensures intent is declared as a first-class object at runtime rather than inferred after the fact.
+While the emerging discourse on **Context Graphs** and the **"Two Clocks Problem"** has recently amplified the need for capturing decision-logic in agentic systems [8], this gap has long been a fundamental bottleneck in the analytics world. For decades, analytics teams have been forced into "forensic archaeology", attempting to reconstruct intent from fragmented logs and state changes. **Decision Telemetry** addresses this historical debt by providing a universal architecture that ensures intent is declared as a first-class object at runtime rather than inferred after the fact.
 
 This technical debt has now evolved into a **strategic risk** driven by three converging trends:
 
@@ -192,15 +192,15 @@ graph LR
 *Figure 2: Analytics Maturity Model*
 
 
-### 4.1 Level 1 - Reactive Cleanup
+### 4.1 Level 1: Reactive Cleanup
 
 At this stage, analytics reconstructs decisions from artifacts. Pipelines compensate for inconsistent upstream emissions. Knowledge of system behavior is embedded in transformation logic and institutional memory. Analytics functions as archaeology.
 
-### 4.2 Level 2 - Structural Contracts
+### 4.2 Level 2: Structural Contracts
 
 Here, organizations introduce schema guarantees and producer accountability. Pipelines become stable. Breakage decreases. However, intent remains implicit. Analytics consumes structured artifacts but still performs semantic inference.
 
-### 4.3 Level 3 - Intentional Decision Telemetry
+### 4.3 Level 3: Intentional Decision Telemetry
 
 In the final stage, decisions are emitted as structured semantic objects. Producers instrument decision contracts directly. Analytics consumes declared intent rather than reconstructing it. Explainability, auditability, and investigation speed improve as a consequence of architecture, not heroics.
 
@@ -252,7 +252,7 @@ The pattern is incremental. Systems can instrument high-value decision points fi
 
 ## 6. Production Profile: Safe Decision Telemetry in High-Throughput Systems
 
-Decision telemetry is designed to capture reasoning at runtime without compromising system stability. In high-throughput environments - payment gateways, fraud pipelines, AI inference services - observability infrastructure must obey strict performance and safety constraints. A telemetry system that introduces latency or memory pressure becomes an outage vector.
+Decision telemetry is designed to capture reasoning at runtime without compromising system stability. In high-throughput environments, including payment gateways, fraud pipelines, AI inference services, observability infrastructure must obey strict performance and safety constraints. A telemetry system that introduces latency or memory pressure becomes an outage vector.
 
 This section defines the production profile of decision telemetry: the operational rules required to ensure that decision recording remains safe under extreme load.
 
@@ -417,7 +417,7 @@ Decision telemetry does not exist in a vacuum. It builds upon and extends severa
 
 ## 10. Toward a Universal Standard
 
-For decision telemetry to reach its full potential, it must move beyond agent-specific memory. While the rise of autonomous agents has highlighted the urgency of capturing reasoning traces, the requirement for an immutable, semantic record of intent is universal across all modern software. **Decision Telemetry** provides the standardized vocabulary required to bridge legacy microservices, manual human approvals, and autonomous agents into a single, analytics-ready governance layer. 
+For decision telemetry to reach its full potential, it must move beyond agent-specific memory models. While the rise of autonomous agents has highlighted the urgency of capturing reasoning traces, the requirement for an immutable, semantic record of intent is universal across all modern software. **Decision Telemetry** provides the standardized vocabulary required to bridge legacy microservices, manual human approvals, and autonomous agents into a single, analytics-ready governance layer. 
 
 A universal schema allows interoperability across systems, organizations, and industries. The path forward resembles earlier infrastructure standards: open specification, reference implementations, and community-driven evolution. As adoption grows, decision telemetry can serve as a fundamental layer, similar to metrics and tracing in modern systems [1].
 
@@ -452,3 +452,6 @@ And architecture scales.
 [6] B. Beyer, C. Jones, J. Petoff, and N. R. Murphy, *Site Reliability Engineering: How Google Runs Production Systems*. O’Reilly Media, 2016. [Online]. Available: https://sre.google/books/
 
 [7] S. Sethuraman, “Decision Trace SDK,” GitHub repository, 2026. [Online]. Available: https://github.com/logicoflife/decision-trace
+
+[8] J. Gupta and A. Garg, “AI’s trillion-dollar opportunity: Context graphs,” Foundation Capital, Dec. 22, 2025. [Online]. Available: https://foundationcapital.com/context-graphs
+

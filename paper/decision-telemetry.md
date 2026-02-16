@@ -2,8 +2,8 @@
 ## A Universal Contract for Analytics-Ready Systems
 
 **Author:** Shobha Sethuraman  
-**Version:** 0.3  
-**Date:** 2026-02-09
+**Version:** 0.4  
+**Date:** 2026-02-16
 
 ---
 
@@ -38,11 +38,13 @@ As systems grow more automated and AI-driven, this gap widens. The cost of recon
 
 ## 1.1 The Urgency of Now
 
-Three converging trends have dramatically increased the cost of opaque decision systems, transforming this from a technical debt issue into a strategic risk:
+While the emerging discourse on **Context Graphs** and the **"Two Clocks Problem"** has recently amplified the need for capturing decision-logic in agentic systems, this gap has long been a fundamental bottleneck in the analytics world. For decades, analytics teams have been forced into "forensic archaeology"—attempting to reconstruct intent from fragmented logs and state changes. **Decision Telemetry** addresses this historical debt by providing a universal architecture that ensures intent is declared as a first-class object at runtime rather than inferred after the fact.
 
-1.  **AI and Probabilistic Systems**: Unlike deterministic code, AI agents and LLMs produce probabilistic outputs. Understanding *why* an agent took an action cannot be solved by reading the code; it requires a trace of the context, prompt, and model output.
-2.  **Automated Fraud Pipelines**: Modern fraud detection is a complex DAG of rules, ML models, and manual reviews. When a legitimate user is blocked, "debugging" the decision requires tracing a path through dozens of independent components.
-3.  **Regulatory Pressure**: New frameworks (EU AI Act, GDPR, financial compliance) demand more than just logs; they require explainability. Organizations must be able to mechanically prove why a specific decision was made, without relying on forensic archaeology.
+This technical debt has now evolved into a **strategic risk** driven by three converging trends:
+
+1.  [cite_start]**Shift to Probabilistic Systems**: AI agents and LLMs produce outputs that cannot be audited by reading code alone; understanding these actions requires an immutable trace of the context and logic used at the moment of execution.
+2.  **Complexity of Automated Pipelines**: Modern workflows, such as fraud detection, are complex DAGs of rules and ML models. [cite_start]Debugging a single outcome now requires tracing a path through dozens of independent, opaque components.
+3.  **Regulatory Mandates for Explainability**: New frameworks like the EU AI Act and financial compliance regulations demand more than just logs; they require a mechanical proof of *why* a decision was made. [cite_start]Organizations can no longer rely on downstream reconstruction to meet legal evidentiary standards.
 
 ---
 
@@ -115,6 +117,7 @@ classDiagram
     Decision --* PolicyCheck : evaluates
     Decision --* Outcome : produces
 ```
+*Figure 1: Decision Object Diagram*
 
 
 When these elements are emitted intentionally at runtime, the system declares its reasoning rather than forcing analytics to infer it.
@@ -156,14 +159,16 @@ This strict schema ensures that every decision - whether from a microservice, a 
 
 A critical requirement for decision telemetry is safety. Recording decisions must never compromise the system's stability or the user's privacy.
 
-### PII Redaction
+### 3.2.1 PII Redaction
 Decision payloads often contain sensitive data (names, emails, tokens). The telemetry layer must support automatic redaction of Personally Identifiable Information (PII) at the source, before the event leaves the producer system.
 
-### Failure Isolation
+### 3.2.2 Failure Isolation
 Telemetry is a non-critical path. If the decision recording infrastructure fails (e.g., the collector is down), the application must continue to function normally. The SDK isolates telemetry errors, ensuring that observability issues never cause business logic failures.
 
-### Immutability
+### 3.2.3 Immutability
 Once a decision is recorded, it is written to an append-only ledger. This guarantees that the history of reasoning cannot be altered, providing a reliable audit trail for compliance and governance.
+
+---
 
 ## 4. Analytics Maturity Model
 
@@ -184,17 +189,18 @@ graph LR
     L1 --> L2
     L2 --> L3
 ```
+*Figure 2: Analytics Maturity Model*
 
 
-### Level 1 — Reactive Cleanup
+### 4.1 Level 1 — Reactive Cleanup
 
 At this stage, analytics reconstructs decisions from artifacts. Pipelines compensate for inconsistent upstream emissions. Knowledge of system behavior is embedded in transformation logic and institutional memory. Analytics functions as archaeology.
 
-### Level 2 — Structural Contracts
+### 4.2 Level 2 — Structural Contracts
 
 Here, organizations introduce schema guarantees and producer accountability. Pipelines become stable. Breakage decreases. However, intent remains implicit. Analytics consumes structured artifacts but still performs semantic inference.
 
-### Level 3 — Intentional Decision Telemetry
+### 4.3 Level 3 — Intentional Decision Telemetry
 
 In the final stage, decisions are emitted as structured semantic objects. Producers instrument decision contracts directly. Analytics consumes declared intent rather than reconstructing it. Explainability, auditability, and investigation speed improve as a consequence of architecture, not heroics.
 
@@ -235,13 +241,12 @@ graph LR
         Ledger -->|Inspect| Debug
     end
 ```
+*Figure 3: Decision Telemetry Architecture Flow*
 
 
 This architecture resembles the evolution of observability systems. Metrics and traces did not replace logs; they added a higher-level abstraction that made system behavior legible. Decision telemetry performs the same function for *intent*.
 
 The pattern is incremental. Systems can instrument high-value decision points first, expanding coverage over time. Adoption does not require rewriting existing architecture; it requires declaring semantics where they already exist.
-
----
 
 ---
 
@@ -255,36 +260,36 @@ This section defines the production profile of decision telemetry: the operation
 
 All implementation guidance follows from this invariant.
 
-### Non-Blocking Capture
+### 6.1 Non-Blocking Capture
 
 Decision recording occurs in the application hot path. Any blocking behavior — synchronous network calls, deep object copying, or expensive serialization — directly impacts user latency.
 
 In production systems:
 
-*   decision capture must complete in constant time
-*   export must occur asynchronously
-*   application threads must never wait for telemetry I/O
+-   decision capture must complete in constant time
+-   export must occur asynchronously
+-   application threads must never wait for telemetry I/O
 
 The SDK performs only minimal validation and enqueues the event into a bounded in-memory buffer. A background worker handles serialization, batching, and transmission to the collector.
 
 This separation ensures that telemetry overhead remains predictable even when downstream infrastructure experiences latency spikes or outages.
 
-### Bounded Memory and Backpressure
+### 6.2 Bounded Memory and Backpressure
 
 Telemetry systems fail not by silence but by explosion. Unbounded buffers allow observability traffic to accumulate until memory exhaustion destabilizes the host application.
 
 The production profile requires:
 
-*   fixed-size ring buffers
-*   explicit payload size limits
-*   capped causal link arrays
-*   drop-on-overflow behavior
+-   fixed-size ring buffers
+-   explicit payload size limits
+-   capped causal link arrays
+-   drop-on-overflow behavior
 
 When the buffer is full, the oldest events are discarded and a counter metric is incremented. Dropping telemetry is acceptable. Blocking business logic is not.
 
 This mirrors the design philosophy of mature observability systems: telemetry is best-effort, not transactional. Decision telemetry is intentionally best-effort. Preserving application reliability takes precedence over preserving telemetry.
 
-### Evidence Layering
+### 6.3 Evidence Layering
 
 A common failure mode in observability tooling is *payload dumping* — attaching entire application objects to telemetry events. Large mutable objects increase CPU overhead, create privacy risk, and amplify garbage collection pressure.
 
@@ -296,21 +301,21 @@ Decision telemetry enforces a layered evidence model:
 
 This model preserves semantic richness while maintaining predictable performance.
 
-### Fail-Open Isolation
+### 6.4 Fail-Open Isolation
 
 Decision telemetry is non-critical infrastructure. Failures in the telemetry pipeline must never propagate to business logic.
 
 If serialization fails, buffers overflow, or collectors are unavailable:
 
-*   events are dropped
-*   failure metrics are emitted
-*   application execution continues normally
+-   events are dropped
+-   failure metrics are emitted
+-   application execution continues normally
 
 The system degrades observability, not availability.
 
 This isolation is essential in regulated or financial environments where reliability requirements exceed telemetry guarantees.
 
-### Transport and Schema Considerations
+### 6.5 Transport and Schema Considerations
 
 Production deployments may choose binary encodings (e.g., Protobuf or Avro) for efficiency, while retaining JSON as a human-readable debug format. The transport format is an implementation detail; the semantic contract remains constant.
 
@@ -318,34 +323,34 @@ Strict schemas stabilize ingestion and enable evolution through versioning. Prod
 
 The architecture favors loose coupling:
 
-*   producers focus on fast emission
-*   collectors enforce correctness
-*   ledgers guarantee immutability
+-   producers focus on fast emission
+-   collectors enforce correctness
+-   ledgers guarantee immutability
 
-### Operational Envelope
+### 6.6 Operational Envelope
 
 A production-safe implementation targets:
 
-*   sub-millisecond p99 capture overhead
-*   sustained high event throughput per instance
-*   fixed upper memory bounds
-*   zero impact on request success rates
+-   sub-millisecond p99 capture overhead
+-   sustained high event throughput per instance
+-   fixed upper memory bounds
+-   zero impact on request success rates
 
 These constraints treat decision telemetry as *infrastructure*, not logging.
 
-### Anti-Patterns to Avoid
+### 6.7 Anti-Patterns to Avoid
 
 The following practices violate the production profile:
 
-*   synchronous HTTP export in request threads
-*   deep copying complex objects
-*   embedding full request or user objects in payloads
-*   unbounded arrays or recursive structures
-*   retry loops in the application hot path
+-   synchronous HTTP export in request threads
+-   deep copying complex objects
+-   embedding full request or user objects in payloads
+-   unbounded arrays or recursive structures
+-   retry loops in the application hot path
 
 These patterns convert observability into a reliability risk.
 
-### Why the Production Profile Matters
+### 6.8 Why the Production Profile Matters
 
 Decision telemetry’s value lies in making reasoning observable. That value disappears if the instrumentation itself destabilizes the system it observes.
 
@@ -412,11 +417,11 @@ Decision telemetry does not exist in a vacuum. It builds upon and extends severa
 
 ## 10. Toward a Universal Standard
 
-For decision telemetry to reach its full potential, decision contracts are designed to function as a shared vocabulary. A universal schema allows interoperability across systems, organizations, and industries.
+For decision telemetry to reach its full potential, it must move beyond agent-specific memory. While the rise of autonomous agents has highlighted the urgency of capturing reasoning traces, the requirement for an immutable, semantic record of intent is universal across all modern software. [cite_start]**Decision Telemetry** provides the standardized vocabulary required to bridge legacy microservices, manual human approvals, and autonomous agents into a single, analytics-ready governance layer. 
 
-The path forward resembles earlier infrastructure standards: open specification, reference implementations, and community-driven evolution. As adoption grows, decision telemetry can serve as a fundamental layer, similar to metrics and tracing in modern systems.
+A universal schema allows interoperability across systems, organizations, and industries. [cite_start]The path forward resembles earlier infrastructure standards: open specification, reference implementations, and community-driven evolution. [cite_start]As adoption grows, decision telemetry can serve as a fundamental layer, similar to metrics and tracing in modern systems.
 
-Standardization does not constrain innovation. It creates a stable semantic layer on which innovation compounds.
+Standardization does not constrain innovation. [cite_start]It creates a stable semantic layer on which innovation compounds.
 
 ---
 

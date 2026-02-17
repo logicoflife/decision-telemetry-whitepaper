@@ -1,25 +1,18 @@
 # Decision Telemetry Architecture
-
 **A Universal Contract for Analytics-Ready Systems**
 
-Author: Shobha Sethuraman  
-Version: 0.3 — Production Profile
-
----
+**Author:** Shobha Sethuraman  
+**Version:** 0.4 — Universal Protocol  
+**Date:** 2026-02-16
 
 ## Overview
 
-Decision Telemetry is an architecture proposal for making distributed systems observable by design. It introduces a semantic contract for decisions — distinct from logs, metrics, or traces — allowing analytics to reconstruction reasoning without guesswork.
+**Current Version:** 0.4 (Gold Master)  
+**Status:** Public Draft (TechRxiv Preprint)
 
-> **Status**: Public Draft (v0.3)
+While the emerging discourse on **Context Graphs** and the **"Two Clocks Problem"** has recently highlighted the need for capturing decision-logic in agentic systems, this gap has long been a fundamental bottleneck in the analytics world. Decision Telemetry addresses this historical debt by providing a universal architecture that ensures intent is declared as a first-class object at runtime rather than inferred after the fact.
 
-Modern analytics systems reconstruct intent from logs, metrics, and scattered events. This paper argues for a structural shift: decisions should be emitted intentionally as first-class objects, allowing analytics systems to consume declared reasoning instead of inferring behavior.
-
-The result is faster investigations, explainable pipelines, and architecture that scales with complexity.
-
-This repository contains the whitepaper proposing the Decision Telemetry Architecture and serves as a public draft specification.
-
----
+Decision Telemetry provides the standardized vocabulary required to bridge legacy microservices, manual human approvals, and autonomous agents into a single, analytics-ready governance layer.
 
 ## What is Decision Telemetry?
 
@@ -29,98 +22,45 @@ Decision telemetry treats decisions as semantic contracts:
 Decision = Context + Actor + Logic + Outcome + Lineage
 ```
 
-Instead of reconstructing intent after the fact, systems emit reasoning at the moment it occurs.
+Instead of reconstructing intent after the fact, systems emit reasoning at the moment it occurs. This enables:
 
-This enables:
-
-- analytics-ready pipelines
-- explainable AI systems
-- audit-ready compliance trails
-- fraud and risk transparency
-- lineage-aware debugging
-
----
-
-## Status
-
-This is a **public draft proposal**.
-
-The architecture is stable enough for discussion, feedback, and experimentation, but is expected to evolve through community input.
-
-This repository is not a product release.  
-It is a standards proposal and reference framework.
-
----
+- Analytics-ready pipelines
+- Explainable AI systems
+- Audit-ready compliance trails
+- Fraud and risk transparency
+- Lineage-aware debugging
 
 ## Whitepaper
 
-The full proposal is available here:
+The full proposal is available in the following formats:
 
-👉 [`decision-telemetry.md`](paper/decision-telemetry.md)
+👉 **PDF Version:** [decision-telemetry-v0.4.pdf](pdf/decision-telemetry-v0.4.pdf)
 
-This document defines:
+👉 **Markdown Source:** [decision-telemetry.md](paper/decision-telemetry.md)
 
-- the decision contract model
-- maturity framework
-- architecture pattern
-- reference implementation concepts
-- relationship to existing observability systems
+This document defines the decision contract model, a three-stage analytics maturity framework, and production-safe architecture patterns.
 
----
+## Reference Implementation
 
-## Goals
+The concepts in this paper are demonstrated in the Decision Trace SDK:
 
-- Establish a shared vocabulary for decision artifacts
-- Enable analytics-ready systems by design
-- Provide a candidate universal schema for decision telemetry
-- Support explainability across AI, fraud, and governance systems
-- Encourage open evolution of decision contracts
-
----
-
-## Feedback
-
-Discussion and critique are welcome.
-
-Please open issues or pull requests to:
-
-- suggest improvements
-- question assumptions
-- propose extensions
-- clarify semantics
-
-Architecture proposals improve through public review.
-
----
+👉 **GitHub:** [logicoflife/decision-trace](https://github.com/logicoflife/decision-trace)
 
 ## Citation
 
-If you reference or build upon this work:
+If you reference or build upon this work, please use the following:
 
-```
-Shobha Sethuraman.
-Decision Telemetry Architecture: A Universal Contract for Analytics-Ready Systems.
-Version 0.3, 2026.
-https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.3.pdf
-```
-
----
+> Shobha Sethuraman. "Decision Telemetry Architecture: A Universal Contract for Analytics-Ready Systems." Version 0.4, 2026.
 
 ## License
 
 This work is licensed under the Apache License 2.0.
 
-See LICENSE file for details.
-
----
-
 ## Why this exists
 
-Analytics should not be archaeology.
+**Analytics should not be archaeology.**
 
-Decision telemetry proposes a simple shift:
-
-Emit reasoning at runtime.
+Decision telemetry proposes a simple shift: **Emit reasoning at runtime.**
 
 When decisions are declared explicitly, analytics becomes architecture.
 

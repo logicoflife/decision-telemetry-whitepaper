@@ -11,7 +11,7 @@
 
 Modern analytics teams spend enormous effort reconstructing decisions from logs, events, and scattered artifacts. This reactive model turns analytics into archaeology: pipelines compensate for upstream ambiguity, investigations rely on reverse engineering, and explainability becomes expensive.
 
-This paper argues that analytics maturity requires a structural shift. Decisions must be emitted as first-class semantic objects at runtime rather than inferred after the fact. We introduce decision contracts as a standardized representation of outcomes, evidence, and lineage, and describes an architecture pattern that makes analytics-ready systems intentional by design.
+This paper argues that analytics maturity requires a structural shift. Decisions must be emitted as first-class semantic objects at runtime rather than inferred after the fact. We introduce decision contracts as a standardized representation of outcomes, evidence, and lineage, and describe an architecture pattern that makes analytics-ready systems intentional by design.
 
 Decision telemetry does not replace existing observability or data contracts. It adds a semantic layer that allows analytics systems to consume declared intent instead of reconstructing behavior. The result is faster investigations, clearer audit trails, and predictable analytics pipelines.
 

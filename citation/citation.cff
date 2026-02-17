@@ -1,19 +1,25 @@
 cff-version: 1.2.0
 message: "If you use this whitepaper, please cite it as below."
 authors:
-- family-names: "Sethuraman"
-  given-names: "Shobha"
-title: "Decision Telemetry Whitepaper"
-version: "0.3"
-date-released: 2026-02-10
-url: "https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.3.pdf"
+  - family-names: "Sethuraman"
+    given-names: "Shobha"
+title: "Decision Telemetry Architecture: A Universal Contract for Analytics-Ready Systems"
+version: "0.4"
+date-released: 2026-02-16
+url: "https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.4.pdf"
+keywords:
+  - decision telemetry
+  - decision trace
+  - context graphs
+  - analytics engineering
+  - two clocks problem
+abstract: >
+  A whitepaper proposing decision telemetry as a universal engineering protocol to bridge the gap between infrastructure observability and business analytics, specifically addressing the 'Two Clocks Problem' in modern automated systems.
 preferred-citation:
   type: article
   authors:
-  - family-names: "Sethuraman"
-    given-names: "Shobha"
+    - family-names: "Sethuraman"
+      given-names: "Shobha"
   title: "Decision Telemetry Architecture: A Universal Contract for Analytics-Ready Systems"
   year: 2026
-  url: "https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.3.pdf"
-abstract: >
-  A whitepaper proposing decision contracts as a universal semantic layer for analytics-ready systems.
+  url: "https://github.com/logicoflife/decision-telemetry-whitepaper/blob/main/pdf/decision-telemetry-v0.4.pdf"

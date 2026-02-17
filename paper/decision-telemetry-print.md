@@ -2,8 +2,8 @@
 ## A Universal Contract for Analytics-Ready Systems
 
 **Author:** Shobha Sethuraman  
-**Version:** 0.3  
-**Date:** 2026-02-10
+**Version:** 0.4  
+**Date:** 2026-02-17
 
 ---
 
@@ -17,6 +17,7 @@ Decision telemetry does not replace existing observability or data contracts. It
 
 This paper presents a maturity model, architectural framework, and reference implementation demonstrating how decision contracts can function as a universal standard for analytics-driven systems.
 
+---
 
 ## Abstract
 
@@ -36,7 +37,9 @@ This reactive model does not fail because of insufficient tooling. It fails beca
 
 As systems grow more automated and AI-driven, this gap widens. The cost of reconstructing decisions increases faster than the value of analytics derived from them. A structural shift is required: decisions must be observable by design, not inferred after the fact.
 
-## 1.1 The Urgency of Now
+&nbsp;
+
+### 1.1 The Urgency of Now
 
 Three converging trends have dramatically increased the cost of opaque decision systems, transforming this from a technical debt issue into a strategic risk:
 
@@ -93,7 +96,9 @@ A *decision contract* is the standardized representation of this object. It is n
 
 This shift transforms decisions from implicit side effects into explicit artifacts. Analytics systems no longer reverse engineer intent; they consume it directly. Investigations become queries against declared reasoning rather than forensic reconstruction.
 
-## 3.1 Anatomy of a Decision Event
+&nbsp;
+
+### 3.1 Anatomy of a Decision Event
 
 To make this concrete, a decision is not a single log line but a structured event containing specific fields. The schema is language-agnostic and transport-neutral. Below is a JSON representation of a decision outcome event as defined in the reference implementation:
 
@@ -122,18 +127,30 @@ To make this concrete, a decision is not a single log line but a structured even
 
 This strict schema ensures that every decision - whether from a microservice, a monolith, or an AI agent - looks identical to the analytics layer.
 
-## 3.2 Safety and Privacy by Design
+&nbsp;
+
+### 3.2 Safety and Privacy by Design
 
 A critical requirement for decision telemetry is safety. Recording decisions must never compromise the system's stability or the user's privacy.
 
-### PII Redaction
+&nbsp;
+
+#### PII Redaction
 Decision payloads often contain sensitive data (names, emails, tokens). The telemetry layer must support automatic redaction of Personally Identifiable Information (PII) at the source, before the event leaves the producer system.
 
-### Failure Isolation
+&nbsp;
+
+#### Failure Isolation
 Telemetry is a non-critical path. If the decision recording infrastructure fails (e.g., the collector is down), the application must continue to function normally. The SDK isolates telemetry errors, ensuring that observability issues never cause business logic failures.
 
-### Immutability
+&nbsp;
+
+#### Immutability
 Once a decision is recorded, it is written to an append-only ledger. This guarantees that the history of reasoning cannot be altered, providing a reliable audit trail for compliance and governance.
+
+&nbsp;
+
+---
 
 ## 4. Analytics Maturity Model
 
